@@ -4,6 +4,7 @@ import { Message, SessionStatusResponse } from "./types";
 const BASE_URL =
     process.env.NEXT_PUBLIC_API_BASE_URL ?? ""; // same origin by default
 
+//Take a file from the browser → send it to the backend → get back a sessionId.
 export async function uploadDocument(file: File): Promise<{ sessionId: string }> {
     const formData = new FormData();
     formData.append("file", file);
@@ -24,10 +25,10 @@ export async function getSessionStatus(
     sessionId: string
 ): Promise<SessionStatusResponse> {
     const res = await fetch(
-        `${BASE_URL}/api/session/${encodeURIComponent(sessionId)}/status`,
+        `${BASE_URL}/api/session/${encodeURIComponent(sessionId)}/status`, //encodeURIComponent to handle special chars in sessionId
         {
             method: "GET",
-            cache: "no-store",
+            cache: "no-store", //We always want fresh session status, not an old one. Tells browser to not cache the response
         }
     );
 
@@ -37,6 +38,8 @@ export async function getSessionStatus(
 
     return res.json();
 }
+
+//Take what the user typed in the chat, send it to the server for this session, and bring back the AI’s reply + updated session status.
 
 export async function sendChatMessage(
     sessionId: string,
